@@ -1,35 +1,35 @@
-'use strict';
+'use strict'
 
-const mathJs = require('mathjs');
-const coreConv = require('./coreConv');
+const mathJs = require('mathjs')
+const coreConv = require('./coreConv')
 
 /** @const {Object} */
 const textForOperators = {
-	plus: '+',
-	adds: '+',
-	with: '+',
-	minus: '-',
-	subtract: '-',
-	less: '-',
-	by: '/',
-	'divided by': '/',
-	power : '^',
-	into: '*',
-	'multiplied by': '*',
-	cross: '*',
-	sin: 'sin',
-	cos: 'cos',
-	tan: 'tan',
-	cosec: 'cosec',
-	sec: 'sec',
-	cot: 'cot'
-};
+  plus: '+',
+  adds: '+',
+  with: '+',
+  minus: '-',
+  subtract: '-',
+  less: '-',
+  by: '/',
+  'divided by': '/',
+  power: '^',
+  into: '*',
+  'multiplied by': '*',
+  cross: '*',
+  sin: 'sin',
+  cos: 'cos',
+  tan: 'tan',
+  cosec: 'cosec',
+  sec: 'sec',
+  cot: 'cot'
+}
 
 /** @const {string} */
-const currencyUnits = Object.keys(coreConv.currencyUnits).join('|');
+const currencyUnits = Object.keys(coreConv.currencyUnits).join('|')
 
 /** @const {object} */
-const commentRegExp = new RegExp(/^(\s*)#+(.*)/, 'm');
+const commentRegExp = new RegExp(/^(\s*)#+(.*)/, 'm')
 
 /**
  * This function generates a RegExp for the given units
@@ -39,13 +39,13 @@ const commentRegExp = new RegExp(/^(\s*)#+(.*)/, 'm');
  * @returns {object}
  */
 const generateRegExpForUnits = units =>
-	new RegExp(
+  new RegExp(
 		`^(\\d+\\.?\\d*?\\s*)(${units})\\s*(to|TO)\\s*(${units})\\s*$`,
 		'm'
-	);
+  )
 
 /** @const {object} */
-const currencyRegExp = generateRegExpForUnits(currencyUnits);
+const currencyRegExp = generateRegExpForUnits(currencyUnits)
 
 /**
  * This function filters the given value with
@@ -57,7 +57,7 @@ const currencyRegExp = generateRegExpForUnits(currencyUnits);
  * @returns {object}
  */
 const filterValues = v =>
-	v !== null && v !== undefined && v !== '' && v !== 'to' && v !== 'TO';
+  v !== null && v !== undefined && v !== '' && v !== 'to' && v !== 'TO'
 
 /**
  * This function parses the given expression with the provided regExp and passes the values to the core modules
@@ -67,10 +67,10 @@ const filterValues = v =>
  * @returns {number}
  */
 const parseExp = (inp, type, unit) => {
-	inp = inp.split(type).filter(filterValues);
-	const result = coreConv.convert(unit, ...inp);
-	return result;
-};
+  inp = inp.split(type).filter(filterValues)
+  const result = coreConv.convert(unit, ...inp)
+  return result
+}
 
 /**
  * This is main function which parses and sends the values to the core modules
@@ -80,33 +80,33 @@ const parseExp = (inp, type, unit) => {
 
 // TODO: refactor
 const evaluate = exp => {
-	exp = exp.trim();
+  exp = exp.trim()
 
-	// Ignores if starts with #
-	if (commentRegExp.test(exp)) return '';
+  // Ignores if starts with #
+  if (commentRegExp.test(exp)) return ''
 
-	// Replaces the text alternatives for operators
-	Object.keys(textForOperators).forEach(operator => {
-		const operatorRegExp = new RegExp(`\\d+\s*${operator}\\s*`, 'm');
-		exp = exp.replace(operatorRegExp, textForOperators[operator]);
-	});
+  // Replaces the text alternatives for operators
+  Object.keys(textForOperators).forEach(operator => {
+    const operatorRegExp = new RegExp(`\\d+\s*${operator}\\s*`, 'm')
+    exp = exp.replace(operatorRegExp, textForOperators[operator])
+  })
 
-	if (currencyRegExp.test(exp.toUpperCase())) {
-		return parseExp(exp.toUpperCase(), currencyRegExp, 'c');
-	}
-		return mathJs.evaluate(exp);
-};
+  if (currencyRegExp.test(exp.toUpperCase())) {
+    return parseExp(exp.toUpperCase(), currencyRegExp, 'c')
+  }
+  return mathJs.evaluate(exp)
+}
 
 const main = exp => {
-	try {
-		return evaluate(exp)
-			? typeof evaluate(exp) !== 'function' // To filter function printing
-				? evaluate(exp)
-				: ''
-			: '';
-	} catch (error) {
-		return '';
-	}
-};
+  try {
+    return evaluate(exp)
+      ? typeof evaluate(exp) !== 'function' // To filter function printing
+        ? evaluate(exp)
+        : ''
+      : ''
+  } catch (error) {
+    return ''
+  }
+}
 
-module.exports = main;
+module.exports = main

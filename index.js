@@ -1,21 +1,21 @@
-'use strict';
-const path = require('path');
-const { app, BrowserWindow, Menu } = require('electron');
+'use strict'
+const path = require('path')
+const { app, BrowserWindow, Menu } = require('electron')
 /// const {autoUpdater} = require('electron-updater');
-const { is } = require('electron-util');
-const unhandled = require('electron-unhandled');
-const debug = require('electron-debug');
-const contextMenu = require('electron-context-menu');
-const config = require('./store');
-const menu = require('./menu');
-const cacheRates = require('./utils/cacheRates');
+const { is } = require('electron-util')
+const unhandled = require('electron-unhandled')
+const debug = require('electron-debug')
+const contextMenu = require('electron-context-menu')
+const config = require('./store')
+const menu = require('./menu')
+const cacheRates = require('./utils/cacheRates')
 
-unhandled();
-debug();
-contextMenu();
+unhandled()
+debug()
+contextMenu()
 
 // Note: Must match `build.appId` in package.json
-app.setAppUserModelId('com.company.AppName');
+app.setAppUserModelId('com.company.AppName')
 
 // Uncomment this before publishing your first version.
 // It's commented out as it throws an error if there are no published versions.
@@ -29,75 +29,75 @@ app.setAppUserModelId('com.company.AppName');
 // }
 
 // Prevent window from being garbage collected
-let mainWindow;
+let mainWindow
 
 const createMainWindow = async () => {
-	const win = new BrowserWindow({
-		title: app.getName(),
-		center: true,
-		show: false,
-		width: 450,
-		height: 450,
-		frame: false,
-		icon: path.join(__dirname, '/build/icon.png'),
-		webPreferences:{
-			devTools: true,
-			nodeIntegration: true,
-			enableRemoteModule: true
-		}
-	});
+  const win = new BrowserWindow({
+    title: app.getName(),
+    center: true,
+    show: false,
+    width: 450,
+    height: 450,
+    frame: false,
+    icon: path.join(__dirname, '/build/icon.png'),
+    webPreferences: {
+      devTools: true,
+      nodeIntegration: true,
+      enableRemoteModule: true
+    }
+  })
 
-	win.on('ready-to-show', async () => {
-		win.show();
+  win.on('ready-to-show', async () => {
+    win.show()
 
-		await cacheRates(config);
-	});
+    await cacheRates(config)
+  })
 
-	win.on('closed', () => {
-		// Dereference the window
-		// For multiple windows store them in an array
-		mainWindow = undefined;
-	});
+  win.on('closed', () => {
+    // Dereference the window
+    // For multiple windows store them in an array
+    mainWindow = undefined
+  })
 
-	await win.loadFile(path.join(__dirname, 'app', 'index.html'));
+  await win.loadFile(path.join(__dirname, 'app', 'index.html'))
 
-	return win;
-};
+  return win
+}
 
 // Prevent multiple instances of the app
 if (!app.requestSingleInstanceLock()) {
-	app.quit();
+  app.quit()
 }
 
 app.on('second-instance', () => {
-	if (mainWindow) {
-		if (mainWindow.isMinimized()) {
-			mainWindow.restore();
-		}
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore()
+    }
 
-		mainWindow.show();
-	}
-});
+    mainWindow.show()
+  }
+})
 
 app.on('window-all-closed', () => {
-	if (!is.macos) {
-		app.quit();
-	}
-});
+  if (!is.macos) {
+    app.quit()
+  }
+})
 
 app.on('activate', async () => {
-	if (!mainWindow) {
-		mainWindow = await createMainWindow();
-	}
+  if (!mainWindow) {
+    mainWindow = await createMainWindow()
+  }
 });
 
 (async () => {
-	await app.whenReady();
-	Menu.setApplicationMenu(menu);
-	mainWindow = await createMainWindow();
+  await app.whenReady()
+  Menu.setApplicationMenu(menu)
+  mainWindow = await createMainWindow()
 
-	// const favoriteCalculator = config.get('favoriteCalculator');
-	// mainWindow.webContents.executeJavaScript(
-	// 	`document.querySelector('header p').textContent = 'Your favorite calculator  is ${favoriteCalculator}'`
-	// );
-})();
+  // const favoriteCalculator = config.get('favoriteCalculator');
+  // mainWindow.webContents.executeJavaScript(
+  // 	`document.querySelector('header p').textContent = 'Your favorite calculator  is ${favoriteCalculator}'`
+  // );
+})()
