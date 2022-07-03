@@ -158,10 +158,8 @@ const operate = (operator, operand1, operand2) => {
             return mathJs.tan(operand1);
         case 'cosec':
             return 1/(mathJs.sin(operand1));
-        case 'cos':
-            return mathJs.sec(operand1);
-        case 'tan':
-            return mathJs.cot(operand1);
+        
+        
         case 'log':
             return mathJs.log(operand1);
     }
